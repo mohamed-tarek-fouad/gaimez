@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  firstname   String
+  lastname    String
+  username    String
+  email       String   @unique
+  password    String
+  phoneNumber String
+  birthDate   DateTime
+  location    Location
+  hashedRt    String?
+  role        UserRole @default(user)
+}
+
+model Console {
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  model String
+  type  String
+  price Float
+  order Order[]
+}
+
+model Lap {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  comapny String
+  model   String
+  year    String
+  price   Float
+  order   Order[]
+}
+
+model Controller {
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  price Float
+  order Order[]
+}
+
+model Order {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  lapId        String?     @db.ObjectId
+  consoleId    String?     @db.ObjectId
+  controllerId String?     @db.ObjectId
+  lap          Lap?        @relation(fields: [lapId], references: [id])
+  console      Console?    @relation(fields: [consoleId], references: [id])
+  controller   Controller? @relation(fields: [controllerId], references: [id])
+  date         DateTime    @default(now())
+}
+
+type Location {
+  city     String
+  area     String
+  street   String
+  building String
+}
+
+enum UserRole {
+  user
+  admin
+}
