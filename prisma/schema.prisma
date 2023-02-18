@@ -34,7 +34,7 @@ model Console {
 
 model Lap {
   id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  comapny String
+  company String
   model   String
   year    String
   price   Float

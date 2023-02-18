@@ -2,7 +2,7 @@
 import { Controller, UseGuards, Post, Req, Body, Param } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { CreateUserDto } from "./dtos/createUser.dto";
-import { ApiBearerAuth, ApiBody } from "@nestjs/swagger/dist";
+import { ApiBearerAuth } from "@nestjs/swagger/dist";
 import { ForgetPasswordDto } from "./dtos/forgetPassword.dto";
 import { ResetPasswordDto } from "./dtos/resetPassword.dto";
 import { Patch } from "@nestjs/common";
@@ -17,24 +17,9 @@ import { AuthDto } from "./dtos";
 @Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
-  @ApiBody({
-    schema: {
-      type: "object",
-      properties: {
-        email: {
-          type: "string",
-          example: "test1@gmail.com",
-        },
-        password: {
-          type: "string",
-          example: "123Mm123@",
-        },
-      },
-    },
-  })
   @Public()
   @Post("login")
-  async login(@Body() dto: AuthDto) {
+  login(@Body() dto: AuthDto) {
     return this.authService.login(dto);
   }
   @Public()

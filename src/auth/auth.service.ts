@@ -30,26 +30,6 @@ export class AuthService {
     private config: ConfigService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
-  async validateUser(email: string, password: string) {
-    try {
-      const user = await this.prisma.users.findUnique({
-        where: {
-          email,
-        },
-        include: { routerAdmin: { select: { router: true } } },
-      });
-
-      if (user) {
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (isMatch) {
-          return user;
-        }
-      }
-      return null;
-    } catch (err) {
-      return err;
-    }
-  }
   async login(dto: AuthDto) {
     try {
       const user = await this.prisma.users.findUnique({
@@ -63,7 +43,7 @@ export class AuthService {
       const passwordMatches = await bcrypt.compare(dto.password, user.password);
       if (!passwordMatches) throw new ForbiddenException("Access Denied");
 
-      const tokens = await this.getTokens(user.id, user.email);
+      const tokens = await this.getTokens(user.id, user.email, user.role);
       await this.updateRtHash(user.id, tokens.refresh_token);
       delete user.password;
       return { ...tokens, message: "loged in successfully", user };
@@ -87,7 +67,7 @@ export class AuthService {
         data: userDto,
       });
       await this.cacheManager.del("users");
-      const tokens = await this.getTokens(user.id, user.email);
+      const tokens = await this.getTokens(user.id, user.email, user.role);
       await this.updateRtHash(user.id, tokens.refresh_token);
       return { ...user, tokens, message: "user has been created successfully" };
     } catch (err) {
@@ -122,7 +102,7 @@ export class AuthService {
     const rtMatches = await argon.verify(user.hashedRt, rt);
     if (!rtMatches) throw new ForbiddenException("Access Denied");
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id, user.email, user.role);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
     return tokens;
@@ -139,10 +119,11 @@ export class AuthService {
     });
   }
 
-  async getTokens(userId: string, email: string): Promise<Tokens> {
+  async getTokens(userId: string, email: string, userRole): Promise<Tokens> {
     const jwtPayload: JwtPayload = {
-      sub: userId,
+      id: userId,
       email: email,
+      role: userRole,
     };
 
     const [at, rt] = await Promise.all([

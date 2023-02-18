@@ -1,3 +1,4 @@
+import { LapModule } from "./lap/lap.module";
 import { AuthModule } from "./auth/auth.module";
 import { Module, CacheModule } from "@nestjs/common";
 import { UsersModule } from "./users/users.module";
@@ -10,6 +11,7 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 @Module({
   imports: [
+    LapModule,
     AuthModule,
     UsersModule,
     MailerModule.forRootAsync({
