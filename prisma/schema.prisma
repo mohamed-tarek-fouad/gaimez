@@ -69,3 +69,13 @@ enum UserRole {
   user
   admin
 }
+
+model ConsoleImages {
+  id    String   @id @map("_id")
+  image String[]
+}
+
+model LapImages {
+  id    String   @id @map("_id")
+  image String[]
+}

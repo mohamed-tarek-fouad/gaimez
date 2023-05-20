@@ -1,3 +1,4 @@
+import { ConsoleModule } from "./console/console.module";
 import { LapModule } from "./lap/lap.module";
 import { AuthModule } from "./auth/auth.module";
 import { Module, CacheModule } from "@nestjs/common";
@@ -11,6 +12,7 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 @Module({
   imports: [
+    ConsoleModule,
     LapModule,
     AuthModule,
     UsersModule,

@@ -10,34 +10,37 @@ import {
   UseInterceptors,
   UploadedFiles,
 } from "@nestjs/common";
-import { LapDto } from "./dtos/createLap.dto";
-import { LapService } from "./lap.service";
-import { UpdateLapDto } from "./dtos/updateLap.dto";
+import { ConsoleService } from "./console.service";
 import { Public } from "src/common/decorators";
+import { CreateConsoleDto } from "./dtos/createConsole.dto";
+import { UpdateConsoleDto } from "./dtos/updateConsole.dto";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
 
-@Controller("lap")
-export class LapController {
-  constructor(private lapService: LapService) {}
-  @Post("createLap")
-  createLap(@Body() lapDto: LapDto) {
-    return this.lapService.createLap(lapDto);
+@Controller("console")
+export class ConsoleController {
+  constructor(private consoleService: ConsoleService) {}
+  @Post("createConsole")
+  createConsole(@Body() consoleDto: CreateConsoleDto) {
+    return this.consoleService.createConsole(consoleDto);
   }
-  @Patch("updateLap/:lapId")
-  updateLap(@Body() updateLapDto: UpdateLapDto, @Param("lapId") lapId: string) {
-    return this.lapService.updateLap(updateLapDto, lapId);
-  }
-  @Public()
-  @Get("allLaps")
-  allLaps() {
-    return this.lapService.allLaps();
+  @Patch("updateConsole/:consoleId")
+  updateConsole(
+    @Body() updateConsoleDto: UpdateConsoleDto,
+    @Param("consoleId") consoleId: string,
+  ) {
+    return this.consoleService.updateConsole(updateConsoleDto, consoleId);
   }
   @Public()
-  @Get("lapById/:lapId")
-  lapById(@Param("lapId") lapId: string) {
-    return this.lapService.lapById(lapId);
+  @Get("allConsoles")
+  allConsoles() {
+    return this.consoleService.allConsoles();
+  }
+  @Public()
+  @Get("consoleById/:consoleId")
+  consoleById(@Param("consoleId") consoleId: string) {
+    return this.consoleService.consoleById(consoleId);
   }
   @Post("uploadImages")
   @UseInterceptors(
@@ -62,6 +65,6 @@ export class LapController {
     }),
   )
   imageUpload(@UploadedFiles() images) {
-    return this.lapService.uploadImage(images);
+    return this.consoleService.uploadImage(images);
   }
 }

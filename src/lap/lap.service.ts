@@ -73,4 +73,29 @@ export class LapService {
       return err;
     }
   }
+  async uploadImage(files: any) {
+    try {
+      const filenames = files.map((file) => file.filename);
+      const images = await this.prisma.lapImages.findUnique({
+        where: { id: "lapImage" },
+      });
+      console.log(images);
+      if (images) {
+        await this.prisma.lapImages.update({
+          where: { id: "lapImage" },
+          data: { image: { push: filenames } },
+        });
+      } else {
+        await this.prisma.lapImages.create({
+          data: {
+            id: "lapImage",
+            image: filenames,
+          },
+        });
+      }
+      return { message: "images uploaded successfully" };
+    } catch (err) {
+      return err;
+    }
+  }
 }
